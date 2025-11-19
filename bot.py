@@ -1,7 +1,24 @@
 import discord
 from discord.ext import commands, tasks
 import os
+from flask import Flask
+from threading import Thread
 
+# Flask web server
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is running! ✅"
+
+def run():
+    app.run(host="0.0.0.0", port=8080)
+
+def keep_alive_web():
+    t = Thread(target=run)
+    t.start()
+
+# Discord bot setup
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -25,4 +42,8 @@ async def keep_alive():
             except:
                 continue
 
+# Start web server
+keep_alive_web()
+
+# Run bot
 bot.run(os.getenv("DISCORD_TOKEN"))
